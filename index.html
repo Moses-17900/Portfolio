@@ -312,6 +312,19 @@ const DATA = {
   cs[3].img=DATA.pages.internship.img; cs[3].pos="center 38%";
 })();
 // ============ 渲染（含中英文切换） ============
+// ---- Google Analytics（把下面的 GA_ID 换成你的 Measurement ID，例如 "G-ABCDE12345"；留空则不启用） ----
+const GA_ID="G-8R0J51YJC8";
+(function(){
+  if(!GA_ID||navigator.doNotTrack==="1") return;
+  const sc=document.createElement("script");sc.async=true;sc.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(GA_ID);document.head.appendChild(sc);
+  window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
+  gtag("js",new Date());gtag("config",GA_ID,{send_page_view:false});
+})();
+function track(){
+  if(!GA_ID||!window.gtag) return;
+  const id=(location.hash||"#home").slice(1)||"home";
+  gtag("event","page_view",{page_title:document.title,page_location:location.origin+location.pathname+"#"+id,page_path:"/"+id});
+}
 const $=id=>document.getElementById(id);
 const attr=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let lang="";
@@ -456,9 +469,9 @@ function show(){
   const cur=["editing","bts"].includes(id)?"internship":id==="webdesign"?"university":id==="biluthills"?"freelance":id;
   document.querySelectorAll("#menu a").forEach(a=>a.classList.toggle("on",a.dataset.v===cur));
 }
-addEventListener("hashchange",()=>{filter="全部";show();window.scrollTo(0,0)});
+addEventListener("hashchange",()=>{filter="全部";show();window.scrollTo(0,0);track()});
 $("app").addEventListener("click",e=>{const b=e.target.closest("button[data-f]");if(b){filter=b.dataset.f;show()}});
-function setLang(v){lang=v;try{localStorage.setItem("lang",lang)}catch(x){} chrome();show();}
+function setLang(v){lang=v;try{localStorage.setItem("lang",lang)}catch(x){} chrome();show();if(window.gtag&&GA_ID)gtag("event","language_change",{language:v});}
 const lg=$("lg"),lgb=$("lgb"),lgm=$("lgm");
 function openM(o,focus){lg.classList.toggle("open",o);lgb.setAttribute("aria-expanded",o);if(o&&focus){const li=lgm.querySelector('[aria-selected="true"]')||lgm.firstElementChild;li.focus()}}
 lgb.addEventListener("click",e=>{e.stopPropagation();openM(!lg.classList.contains("open"))});
@@ -484,6 +497,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")setBurger(false)});
 addEventListener("resize",()=>{if(innerWidth>820)setBurger(false)});
 chrome();
 show();
+track();
 </script>
 </body>
 </html>
